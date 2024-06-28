@@ -3,21 +3,21 @@ import { redirect } from "next/navigation";
 import { cookies } from "next/headers";
 
 export default async function Home() {
-    const { user } = await validateRequest();
+  const { user } = await validateRequest();
 
-    if (!user) {
-      return redirect("/login");
-    }
+  if (!user) {
+    return redirect("/login");
+  }
 
-    return (
-      <div>
-        <h1>Logged in as {user.username}</h1>
-        <p>User type: {user.role}</p>
-        <form action={logout}>
-          <button>Sign out</button>
-        </form>
-      </div>
-    )
+  return (
+    <div className="">
+      <h1>Logged in as {user.username}</h1>
+      <p>User type: {user.role}</p>
+      <form action={logout}>
+        <button>Sign out</button>
+      </form>
+    </div>
+  );
 }
 
 async function logout(): Promise<ActionResult> {
@@ -25,17 +25,21 @@ async function logout(): Promise<ActionResult> {
   const { session } = await validateRequest();
 
   if (!session) {
-		return {
-			error: "Unauthorized"
-		};
-	}
+    return {
+      error: "Unauthorized",
+    };
+  }
 
   await lucia.invalidateSession(session.id);
   const sessionCookie = lucia.createBlankSessionCookie();
-  cookies().set(sessionCookie.name, sessionCookie.value, sessionCookie.attributes);
+  cookies().set(
+    sessionCookie.name,
+    sessionCookie.value,
+    sessionCookie.attributes
+  );
   return redirect("/login");
 }
 
 interface ActionResult {
-	error: string | null;
+  error: string | null;
 }
